@@ -1,16 +1,35 @@
-name: samina_fashion
-description: Official WebView App for Samina Fashion Store
-publish_to: 'none'
-version: 1.0.0+1
+name: Build APK
+on:
+  push:
+    branches:
+      - main
 
-environment:
-  sdk: '>=3.0.0 <4.0.0'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4  # Updated to v4
 
-dependencies:
-  flutter:
-    sdk: flutter
-  webview_flutter: ^4.4.2
+      - name: Setup Java
+        uses: actions/setup-java@v4 # Updated to v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-flutter:
-  uses-material-design: true
-  
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4 # Yeh v3 se v4 kar diya hai
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
